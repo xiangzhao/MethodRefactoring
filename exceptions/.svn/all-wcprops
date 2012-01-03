@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/laser/svnroot/!svn/ver/6881/xiang/Start/MethodRefactoring/exceptions
+END
+UnitTestFailureException.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/laser/svnroot/!svn/ver/6881/xiang/Start/MethodRefactoring/exceptions/UnitTestFailureException.java
+END
+CompilationFailureException.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/laser/svnroot/!svn/ver/6881/xiang/Start/MethodRefactoring/exceptions/CompilationFailureException.java
+END

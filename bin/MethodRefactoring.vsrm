@@ -1,0 +1,4 @@
+MethodRefactoringAgent:
+	methodRefactoringAgent
+QueryModifierAgent:
+	queryModifierAgent

@@ -1,0 +1,14 @@
+<simulation>
+	<rules>
+		<posted>
+			<start>
+				<fixed value="1" />
+			</start>
+		</posted>
+		<started>
+			<complete>
+				<fixed value="1" />
+			</complete>
+		</started>
+	</rules>
+</simulation>

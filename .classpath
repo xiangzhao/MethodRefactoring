@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="lib" path="/home/xiang/.eclipse/org.eclipse.platform_3.5.0_155965261/plugins/laser.littlejil.standardtypesplugin_1.1.0/ljtypestubs.jar"/>
+	<classpathentry kind="lib" path="/home/xiang/Downloads/juld/lib/juliette-client.jar" sourcepath="/juliette-agent"/>
+	<classpathentry kind="lib" path="/home/xiang/Downloads/apachecommons/commons-lang3-3.0.1/commons-lang3-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/xiang/mysql-connector-java-5.1.17-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
