@@ -1,2 +1,0 @@
-queryModifierAgent: java-agent
-queryModifierAgent.class: agent.QueryModifierAgent
