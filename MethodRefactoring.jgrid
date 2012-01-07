@@ -1,2 +1,3 @@
 queryModifierAgent: java-agent
 queryModifierAgent.class: agent.QueryModifierAgent
+updateReferenceAgent: dummy-agent

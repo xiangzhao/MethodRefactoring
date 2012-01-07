@@ -4,6 +4,7 @@
 package agent;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -61,6 +62,7 @@ public class QueryModifierHandler extends StartHandler {
 	private static final String UNITTESTSQUERY = "select value from unittestsfdbk where vid=(select MAX(vid) from unittestsfdbk)";
 
 	private static final String SRCFILE = "/home/xiang/MethodRefactoringExample/QueryModifierMethod/src/account/CheckingAccount.java";
+	private static final String FOLDERNAME = "/home/xiang/MethodRefactoringExample/QueryModifierMethod/src/account/";
 
 	public QueryModifierHandler(AgendaItem associatedItem, BufferedReader br,
 			Connection conn) {
@@ -90,16 +92,14 @@ public class QueryModifierHandler extends StartHandler {
 				realSystemOut.println("Please specify a querymodifier method:");
 				String querymodifiermethodname = br.readLine();
 				setParameter("querymodifiermethodname", querymodifiermethodname);
-			}
-			if (item.getStep().getName().equals("Declare Query Method")) {
+			} else if (item.getStep().getName().equals("Declare Query Method")) {
 				realSystemOut
 						.println("Please now declare a new query method in the source file");
 				br.readLine();
 				executeShellCmd("gedit " + SRCFILE);
 				br.readLine();
 				setSourcefilecontent();
-			}
-			if (item.getStep().getName().equals(
+			} else if (item.getStep().getName().equals(
 					"Modify Query to return same value as original one")) {
 				realSystemOut
 						.println("Please now modify the query to return same value as original method");
@@ -107,32 +107,28 @@ public class QueryModifierHandler extends StartHandler {
 				executeShellCmd("gedit " + SRCFILE);
 				br.readLine();
 				setSourcefilecontent();
-			}
-			if (item.getStep().getName().equals("Check declaration")) {
+			} else if (item.getStep().getName().equals("Check declaration")) {
 				realSystemOut
 						.println("Please make sure your query method declaration is correct");
 				br.readLine();
 				executeShellCmd("gedit " + SRCFILE);
 				br.readLine();
 				setSourcefilecontent();
-			}
-			if (item.getStep().getName().equals("Check method call")) {
+			} else if (item.getStep().getName().equals("Check method call")) {
 				realSystemOut
 						.println("Please make sure you got it right calling the new method");
 				br.readLine();
 				executeShellCmd("gedit " + SRCFILE);
 				br.readLine();
 				setSourcefilecontent();
-			}
-			if (item.getStep().getName().equals("Check Query body")) {
+			} else if (item.getStep().getName().equals("Check Query body")) {
 				realSystemOut
 						.println("Please make sure your query returns the same value as original one");
 				br.readLine();
 				executeShellCmd("gedit " + SRCFILE);
 				br.readLine();
 				setSourcefilecontent();
-			}
-			if (item.getStep().getName().equals(
+			} else if (item.getStep().getName().equals(
 					"Make original Method return a call to the new query")) {
 				realSystemOut
 						.println("Please make original method return a call to the new query");
@@ -140,12 +136,73 @@ public class QueryModifierHandler extends StartHandler {
 				executeShellCmd("gedit " + SRCFILE);
 				br.readLine();
 				setSourcefilecontent();
-			}
-			if (item.getStep().getName().equals("Compile")) {
+			} else if (item.getStep().getName().equals("Retrieve source file")) {
+				String currentfilename = null;
+				String sourcefilename = (String) item
+						.getParameter("sourcefilename");
+				File dir = new File(sourcefilename.substring(0, sourcefilename
+						.lastIndexOf("/")));
+				String[] children = dir.list();
+				if (children == null) {
+					// Either dir does not exist or is not a directory
+				} else {
+					for (String filename : children) {
+						if (!sourcefilename.equals(filename)
+								&& !filename.contains("class")
+								&& !FileUtil
+										.readfromFile(
+												"/home/xiang/MethodRefactoringExample/result.txt")
+										.contains(filename)) {
+							FileUtil
+									.writetofile(
+											"/home/xiang/MethodRefactoringExample/result.txt",
+											filename + ";");
+							currentfilename = filename;
+							break;
+						}
+
+					}
+				}
+				item.setParameter("currentfilename", currentfilename);
+
+			} else if (item.getStep().getName().equals(
+					"Replace original call to call the query")) {
+				String fullpathcurrentfilename = FOLDERNAME
+						+ item.getParameter("currentfilename");
+				realSystemOut
+						.println("Please replace the original call to call the query for this file");
+				br.readLine();
+				executeShellCmd("gedit " + fullpathcurrentfilename);
+				item.setParameter("referencefilecontent", FileUtil
+						.readfromFile(fullpathcurrentfilename).replace("\n",
+								"\\n"));
+
+			} else if (item.getStep().getName().equals(
+					"Add a call to original method before the query")) {
+
+			} else if (item.getStep().getName().equals("Commit")) {
+
+			} else if (item.getStep().getName().equals("Compile")) {
 				realSystemOut.println("Compiling new source file...");
-				String cmd = "javac " + item.getParameter("sourcefilename");
-				Process pr = Runtime.getRuntime().exec(cmd);
-				String errormsg = FileUtil.printLines(cmd + " stderr:", pr
+				Process pr = null;
+				String sourcefilename = (String) item
+						.getParameter("sourcefilename");
+				if (item.getStep().getParent().getName().equals(
+						"Update References")
+						|| item.getStep().getName().equals(
+								"Handle Reference Compilation Error")) {
+					sourcefilename = sourcefilename.substring(0, sourcefilename
+							.lastIndexOf("/"))
+							+ File.separator + "*.java";
+					pr = Runtime.getRuntime().exec(
+							new String[] { "sh", "-c",
+									"javac " + sourcefilename });
+					// pr.waitFor();
+				} else {
+					String cmd = "javac " + sourcefilename;
+					pr = Runtime.getRuntime().exec(cmd);
+				}
+				String errormsg = FileUtil.printLines(" stderr:", pr
 						.getErrorStream());
 				realSystemOut.println(errormsg);
 				pr.waitFor();
@@ -158,8 +215,7 @@ public class QueryModifierHandler extends StartHandler {
 					realSystemOut.println("Compilation Success!");
 					// logCompilationfdbkToHistory("Compilation Success","success");
 				}
-			}
-			if (item.getStep().getName().equals("Run unit tests")) {
+			} else if (item.getStep().getName().equals("Run unit tests")) {
 				realSystemOut.println("Running unit tests...");
 				String cmd = "/home/xiang/tests.sh";
 				Process pr = Runtime.getRuntime().exec(cmd);
